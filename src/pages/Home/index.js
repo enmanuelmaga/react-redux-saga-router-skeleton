@@ -1,43 +1,64 @@
-import React, { Component } from 'react';
-import PropTypes from 'prop-types';
-import { connect } from 'react-redux';
+import React, { useState } from 'react';
 
-import { getDemoRequest } from '../../redux/actions/demoActions';
+import {
+	Container,
+	Typography,
+	Card,
+	Grid,
+	TextField,
+	Button,
+} from '@material-ui/core';
+import styles from './style';
+import { MovieIcon } from '../../icons';
 
-import User from '../../components/User';
+export default ({ history }) => {
+	const [searchText, setSearchText] = useState('');
+	const classes = styles();
 
-class Home extends Component {
-	componentWillMount() {
-		this.props.getDemoRequest('hey');
-	}
-	render() {
-		const { users } = this.props;
-
-		let items = [];
-		if (typeof users !== 'undefined') {
-			items = users.map((value, index) => {
-				return <User key={index} {...value} />;
-			});
-		}
-		return <div>{items}</div>;
-	}
-}
-
-const mapDispatchToProps = (dispatch, props) => {
-	return {
-		getDemoRequest: payload => {
-			dispatch(getDemoRequest(payload));
-		}
+	const handleSearchText = (event) => {
+		setSearchText(event.target.value);
 	};
-};
-const mapStateToProps = state => {
-	return {
-		users: state.demoReducer[0]
+
+	const handleClean = (event) => {
+		setSearchText('');
 	};
-};
 
-Home.propTypes = {
-	dispatch: PropTypes.func
-};
+	const handleSearch = (event) => {
+		history.push(`/results?movieName=${searchText}`);
+	};
 
-export default connect(mapStateToProps, mapDispatchToProps)(Home);
+	return (
+		<Container className={classes.container}>
+			<Card className={classes.cardContainer}>
+				<Grid container>
+					<Grid className={classes.titleGridContainer}>
+						<Typography className={classes.title}>Bienvenido</Typography>
+					</Grid>
+					<Grid>
+						<MovieIcon className={classes.MovieIcons}></MovieIcon>
+					</Grid>
+				</Grid>
+				<TextField
+					value={searchText}
+					placeholder='Buscar...'
+					onChange={handleSearchText}
+					className={classes.textFieldSearch}
+				/>
+				<Grid container className={classes.buttonsContainer}>
+					<Button variant='outlined' color='secondary' onClick={handleClean}>
+						Limpiar
+					</Button>
+					<Button
+						variant='contained'
+						color='primary'
+						size='large'
+						onClick={handleSearch}
+						className={classes.searchButton}
+					>
+						Buscar
+					</Button>
+				</Grid>
+			</Card>
+		</Container>
+	);
+};
